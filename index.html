@@ -23,43 +23,51 @@
                         <h1 class="mb-0">Cadastro</h1>
                     </div>
                     <div class="card-body">
-                        <form>
+                        <form id="formCadastro">
                             <div class="mb-3">
                                 <label for="clientName" class="form-label">Nome do Cliente:</label>
                                 <input type="text" id="clientName" class="form-control"
-                                    placeholder="Digite o nome do cliente" />
-
+                                    placeholder="Escreva aqui o nome do cliente" />
                             </div>
                             <div class="mb-3">
                                 <label for="clientCPF" class="form-label">CPF:</label>
                                 <input type="text" id="clientCPF" class="form-control"
                                     placeholder="Digite o CPF do cliente" />
-
                             </div>
                             <div class="mb-3">
-                                <label for="clientNascimento" class="form-label">Data de Nascimento:</label>
-                                <input type="text" id="clientCPF" class="form-control"
-                                    placeholder="Digite a Data de Nascimento cliente" />
-
+                                <label for="clientTelefone" class="form-label">Telefone:</label>
+                                <input type="tel" id="clientTelefone" class="form-control"
+                                    placeholder="Digite o Celular do cliente" />
                             </div>
                             <div class="mb-3">
-                                <label for="clientSalario" class="form-label">salario:</label>
-                                <input type="text" id="clietSalario" class="form-control"
-                                    placeholder="Digite o salario do cliente" />
+                                <label for="clientDtNascimento" class="form-label">Data de Nascimento:</label>
+                                <input type="date" id="clientDtNascimento" class="form-control"
+                                    placeholder="Digite a data de nascimento do cliente" />
                             </div>
 
+                            <div class="mb-3">
+                                <label for="clientSalario" class="form-label">Salário:</label>
+                                <input type="text" id="clientSalario" class="form-control"
+                                    placeholder="Digite o salário do cliente" />
+                            </div>
 
+                            <button type="submit" class="btn btn-primary">
+
+                                Salvar
+                            </button>
+                            <button type="button" class="btn btn-info text - whit" onclick="mostrarclientes()">Mostrar
+                                Cliente>/button
+                            </button>
                         </form>
 
-
-
-
-
-
                     </div>
+
                 </div>
+
             </div>
+
         </div>
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js"
             integrity="sha512-TPh2Oxlg1zp+kz3nFA0C5vVC6leG/6mm1z9+mA81MI5eaUVqasPLO8Cuk4gMF4gUfP5etR73rgU/8PNMsSesoQ=="
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -69,8 +77,7 @@
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
             integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
-            crossorigin="
-            anonymous" referrerpolicy="no-referrer"></script>
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"
             integrity="sha512-pHVGpX7F/27yZ0ISY+VVjyULApbDlD0/X0rgGbTqCE7WFW5MezNTWG/dnhtbBuICzsd0WQPgpE4REBLv+UqChw=="
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -82,13 +89,18 @@
             $('#clientCPF').mask('000.000.000-00');
             $('#clientTelefone').mask('(00) 00000-0000');
 
-            $('#clientsalario').maskmoney({ prefix: 'R$ ',
-            allowNegative: false, thousands: '.', decimal: ',', affixesStay: false });
-            
+            $('#clientSalario').maskMoney({
+                prefix: 'R$ ',
+                allowNegative: false, thousands: '.', decimal: ',', affixesStay: false
+            });
 
 
         </script>
+
+        <script src="script/script.js"></script>
+
 </body>
+
 
 
 
