@@ -41,22 +41,40 @@ document.getElementById('formCadastro').addEventListener('submit', function (eve
     const telefone = document.getElementById('clientTelefone').value;
     const dtNascimento = document.getElementById('clientDtNascimento').value;
     const salario = document.getElementById('clientSalario').value;
+
     const salarioconvertido = converterEmCentavos(salario);
     const credito = salarioconvertido * 0.3;
     const creditoDisponivel = ConverterEmreal(credito);
 
-    localStorage.setItem('name', name);
-    localStorage.setItem('cpf', cpf);
-    localStorage.setItem('telefone', telefone);
-    localStorage.setItem('dtNascimento', dtNascimento);
-    localStorage.setItem('salario', salario);
-    localStorage.setItem('creditoDisponivel', creditoDisponivel);
+    const cliente = {
+        name, cpf, telefone, dtNascimento, salario, creditoDisponivel
+    };
 
     limparFormulario();
     alert('Cadastro realizado com sucesso!');
 
 });
+function obitertotalClientes() {
+    return parseInt(localStorage.getItem('totalClientes') || '0', 10);
+}
 
+function salvarCliente(cliente) {
+
+    const index = obitertotalClientes();
+
+
+    localStorage.setItem(`cliente_${index}_name`, cliente.name);
+    localStorage.setItem(`cliente_${index}_cpf`, cliente.cpf);
+    localStorage.setItem(`cliente_${index}_telefone`, cliente.telefone);
+    localStorage.setItem(`cliente_${index}_dtNascimento`, cliente.dtNascimento);
+    localStorage.setItem(`cliente_${index}_salario`, cliente.salario);
+    localStorage.setItem(`cliente_${index}_creditoDisponivel`, cliente.creditoDisponivel);
+
+    localStorage.setItem('totalClientes', index + 1);
+
+    carregarCliente();
+
+}
 
 function limparFormulario() {
     document.getElementById('clientName').value = '';
@@ -64,25 +82,46 @@ function limparFormulario() {
     document.getElementById('clientTelefone').value = '';
     document.getElementById('clientDtNascimento').value = '';
     document.getElementById('clientSalario').value = '';
+}
 
+function buscrClientes() {
+    const total = obitertotalClientes();
+    const clientes = [];
+    for (let i = 0; i < total; i++) []
+    const cliente = {
+
+
+        name: localStorage.getItem(`cliente_${i}_name`),
+        cpf: localStorage.getItem(`cliente_${i}_cpf`),
+        telefone: localStorage.getItem(`cliente_${i}_telefone`),
+        dtNascimento: localStorage.getItem(`cliente_${i}_dtNascimento`),
+        salario: localStorage.getItem(`cliente_${i}_salario`),
+        creditoEmReal: localStorage.getItem(`cliente_${i}_creditoDisponivel`),
+
+    };
+    clientes.push(cliente);
+
+    return clientes;
 
 }
-function mostrarclientes() {
-    const name = localStorage.getItem('name');
-    const cpf = localStorage.getItem('cpf');
-    const telefone = localStorage.getItem('telefone');
-    const dtNascimento = localStorage.getItem('dtNascimento');
-    const salario = localStorage.getItem('salario');
-    const creditoDisponivel = localStorage.getItem('creditoDisponivel');
-    alert(
-        'Nome do cliente: ' + name + '\n' +
-        'CPF: ' + cpf + '\n' +
-        'Telefone: ' + telefone + '\n' +
-        'Data de Nascimento: ' + dtNascimento + '\n' +
-        'Salário: ' + salario + '\n' +
 
-        'Crédito Disponível: R$ ' + creditoDisponivel
-    );
+function carregarCliente() {
+    const clientes = buscrClientes();
+    const tbody = document.getElementById('listaClientes');
+
+    tbody.innerHTML = '';
+    clientes.fortEach(cli => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+    <td>${cli.name}</td>
+    <td>${cli.cpf}</td>
+    <td>${cli.telefone}</td>
+    <td>${cli.dtNascimento}</td>
+    <td>${cli.salario}</td>
+    <td>${cli.creditoEmReal}</td>
+    `;
+        tbody.appendChild(tr);
+    })
 }
 
 function converterEmCentavos(salario) {
