@@ -1,3 +1,23 @@
+document.addEventListener('DOMContentLoaded', function () {
+    carregarCliente();
+    inicializarSelect2Cidades();
+});
+
+function inicializarSelect2Cidades() {
+    const cidades = [
+        { id: 'SP', text: 'São Paulo' },
+        { id: 'RJ', text: 'Rio de Janeiro' },
+        { id: 'MG', text: 'Minas Gerais' },
+        { id: 'ES', text: 'Espírito Santo' }
+    ];
+    $('#clientCidade').select2({
+        theme: 'bootstrap-5',
+        placeholder: 'Selecione a cidade',
+        allowClear: true,
+        data: cidades.map(cidade => ({ id: cidade.id, text: cidade.text }))
+
+    });
+}
 
 function validarCPF(cpf) {
     cpf = cpf.replace(/[.-]/g, ""); // Remove pontos e traços
@@ -40,6 +60,7 @@ document.getElementById('formCadastro').addEventListener('submit', function (eve
     const cpf = document.getElementById('clientCPF').value;
     const telefone = document.getElementById('clientTelefone').value;
     const dtNascimento = document.getElementById('clientDtNascimento').value;
+    const cidade = $('#clientCidade').select2('data')[0]?.text || '';
     const salario = document.getElementById('clientSalario').value;
 
     const salarioconvertido = converterEmCentavos(salario);
@@ -47,13 +68,30 @@ document.getElementById('formCadastro').addEventListener('submit', function (eve
     const creditoDisponivel = ConverterEmreal(credito);
 
     const cliente = {
-        name, cpf, telefone, dtNascimento, salario, creditoDisponivel
+        name, cpf, telefone, dtNascimento, cidade, salario, creditoDisponivel
     };
-
-    limparFormulario();
-    alert('Cadastro realizado com sucesso!');
+    if (existCPFCadastrado(cpf) === true) {
+        alert('CPF Cadastrado!');
+    } else {
+        salvarCliente(cliente);
+        alert('Cadastro realizado com sucesso!');
+        limparFormulario();
+    }
 
 });
+
+function existCPFCadastrado(cpf) {
+    const total = obitertotalClientes();
+
+    for (let i = 0; i < total; i++) {
+        const cpfCadastrado = localStorage.getItem(`cliente_${i}_cpf`);
+
+        if (cpf === cpfCadastrado) {
+            return true;
+        }
+    }
+    return false;
+}
 function obitertotalClientes() {
     return parseInt(localStorage.getItem('totalClientes') || '0', 10);
 }
@@ -62,17 +100,18 @@ function salvarCliente(cliente) {
 
     const index = obitertotalClientes();
 
-
     localStorage.setItem(`cliente_${index}_name`, cliente.name);
     localStorage.setItem(`cliente_${index}_cpf`, cliente.cpf);
     localStorage.setItem(`cliente_${index}_telefone`, cliente.telefone);
     localStorage.setItem(`cliente_${index}_dtNascimento`, cliente.dtNascimento);
+    localStorage.setItem(`cliente_${index}_cidade`, cliente.cidade);
     localStorage.setItem(`cliente_${index}_salario`, cliente.salario);
     localStorage.setItem(`cliente_${index}_creditoDisponivel`, cliente.creditoDisponivel);
 
     localStorage.setItem('totalClientes', index + 1);
 
     carregarCliente();
+    console.log('Cliente salvo com sucesso!');
 
 }
 
@@ -82,47 +121,65 @@ function limparFormulario() {
     document.getElementById('clientTelefone').value = '';
     document.getElementById('clientDtNascimento').value = '';
     document.getElementById('clientSalario').value = '';
+
 }
 
-function buscrClientes() {
+function buscarClientes() {
     const total = obitertotalClientes();
     const clientes = [];
-    for (let i = 0; i < total; i++) []
-    const cliente = {
+    for (let i = 0; i < total; i++) {
+        const cliente = {
+            name: localStorage.getItem(`cliente_${i}_name`),
+            cpf: localStorage.getItem(`cliente_${i}_cpf`),
+            telefone: localStorage.getItem(`cliente_${i}_telefone`),
+            dtNascimento: localStorage.getItem(`cliente_${i}_dtNascimento`),
+            salario: localStorage.getItem(`cliente_${i}_salario`),
+            cidade: localStorage.getItem(`cliente_${i}_cidade`) || '',
+            creditoEmReal: localStorage.getItem(`cliente_${i}_creditoDisponivel`),
+        };
 
-
-        name: localStorage.getItem(`cliente_${i}_name`),
-        cpf: localStorage.getItem(`cliente_${i}_cpf`),
-        telefone: localStorage.getItem(`cliente_${i}_telefone`),
-        dtNascimento: localStorage.getItem(`cliente_${i}_dtNascimento`),
-        salario: localStorage.getItem(`cliente_${i}_salario`),
-        creditoEmReal: localStorage.getItem(`cliente_${i}_creditoDisponivel`),
-
-    };
-    clientes.push(cliente);
+        clientes.push(cliente);
+    }
 
     return clientes;
 
 }
 
 function carregarCliente() {
-    const clientes = buscrClientes();
+    const clientes = buscarClientes();
+    console.log(clientes);
     const tbody = document.getElementById('listaClientes');
 
     tbody.innerHTML = '';
-    clientes.fortEach(cli => {
+    clientes.forEach(cli => {
         const tr = document.createElement('tr');
+        const date = formatdData(cli.dtNascimento);
         tr.innerHTML = `
-    <td>${cli.name}</td>
-    <td>${cli.cpf}</td>
-    <td>${cli.telefone}</td>
-    <td>${cli.dtNascimento}</td>
-    <td>${cli.salario}</td>
-    <td>${cli.creditoEmReal}</td>
-    `;
+            <td>${cli.name}</td>
+            <td>${cli.cpf}</td>
+            <td>${cli.telefone}</td>
+            <td>${date}</td>
+            <td>${cli.salario}</td>
+             <td>${cli.cidade}</td>
+            <td>${cli.creditoEmReal}</td>
+            `;
+
         tbody.appendChild(tr);
-    })
+    });
 }
+function formatdData(dataStr) {
+    if (!isNaN(dataStr)) return '';
+
+    const parts = dataStr.split('-');
+    if (parts.length === 3) {
+        const [y, m, d] = parts;
+        return `${d}/${m}/${y}`;
+    }
+
+
+
+}
+
 
 function converterEmCentavos(salario) {
     const salarioEmCEntavos = salario.replace(/[^\d,]/g, '').replace(',', '.');
@@ -130,7 +187,6 @@ function converterEmCentavos(salario) {
 }
 
 function ConverterEmreal(creditdo) {
-
     const creditoconvertido = (creditdo / 100).toFixed(2).replace('.', ',');
     return creditoconvertido.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }
